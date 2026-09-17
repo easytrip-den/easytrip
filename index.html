@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 여행</title>
+    <title>이지트립</title>
     <style>
         * {
             margin: 0;
@@ -13,25 +13,33 @@
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            overflow: hidden; /* 기본 스크롤 막기 */
+            overflow: hidden;
             height: 100vh;
+            background: #111;
         }
 
-        /* ===== 첫 화면 ===== */
-        .hero {
+        /* ===== 공통 페이지 ===== */
+        .page {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: 10;
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .hero.hide {
             opacity: 0;
             pointer-events: none;
-            transform: scale(1.05);
+            transition: opacity 0.7s ease;
+            z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* ===== 1페이지 (히어로) ===== */
+        #page1 {
+            background: #000;
         }
 
         .hero-slide {
@@ -59,7 +67,6 @@
             z-index: 1;
         }
 
-        /* 글자 - 왼쪽에 완전히 붙임 */
         .hero-text {
             position: absolute;
             top: 50%;
@@ -73,7 +80,7 @@
         }
 
         .hero-text.hide {
-            transform: translateY(-50%) translateX(100vw); /* 오른쪽으로 사라짐 */
+            transform: translateY(-50%) translateX(100vw);
             opacity: 0;
         }
 
@@ -84,7 +91,7 @@
             margin: 0;
         }
 
-        .scroll-down {
+        .scroll-hint {
             position: absolute;
             bottom: 40px;
             left: 50%;
@@ -94,60 +101,84 @@
             letter-spacing: 2px;
             z-index: 2;
             opacity: 0.8;
-            transition: opacity 0.5s;
         }
 
-        .hero.hide .scroll-down {
-            opacity: 0;
-        }
-
-        /* ===== 두 번째 페이지 ===== */
-        .section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
+        /* ===== 2페이지 ===== */
+        #page2 {
             background: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            z-index: 5;
         }
 
-        .section.show {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateY(0);
-        }
-
-        .section-content {
-            max-width: 700px;
+        .page2-content {
             text-align: center;
+            max-width: 900px;
             padding: 20px;
         }
 
-        .section-content h2 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            color: #222;
+        .page2-line {
+            margin: 18px 0;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s ease;
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .section-content p {
-            font-size: 1.15rem;
-            color: #555;
+        .page2-line.hide-right {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .page2-line.hide-left {
+            transform: translateX(-120%);
+            opacity: 0;
+        }
+
+        .page2-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 30px;
+        }
+
+        .page2-text {
+            font-size: 1.35rem;
+            color: #444;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* ===== 3페이지 ===== */
+        #page3 {
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .page3-content {
+            text-align: center;
+            max-width: 700px;
+            padding: 20px;
+        }
+
+        .page3-content h2 {
+            font-size: 2.4rem;
+            margin-bottom: 20px;
+        }
+
+        .page3-content p {
+            font-size: 1.2rem;
+            opacity: 0.85;
             line-height: 1.8;
         }
     </style>
 </head>
 <body>
 
-    <!-- 첫 화면 -->
-    <section class="hero" id="hero">
+    <!-- 1페이지 -->
+    <section class="page active" id="page1">
         <img src="https://picsum.photos/id/1015/1920/1080" class="hero-slide active" alt="여행지1">
         <img src="https://picsum.photos/id/1016/1920/1080" class="hero-slide" alt="여행지2">
         <img src="https://picsum.photos/id/1018/1920/1080" class="hero-slide" alt="여행지3">
@@ -163,87 +194,126 @@
             <p>나만의 일정</p>
         </div>
 
-        <div class="scroll-down">↓ Scroll</div>
+        <div class="scroll-hint">↓ Scroll</div>
     </section>
 
-    <!-- 두 번째 페이지 -->
-    <section class="section" id="section">
-        <div class="section-content">
-            <h2>나만의 여행을 시작하세요</h2>
+    <!-- 2페이지 -->
+    <section class="page" id="page2">
+        <div class="page2-content">
+            <div class="page2-line page2-title" data-dir="right">나만의 여행을 시작하세요</div>
+            <div class="page2-line page2-text" data-dir="left">여행은 다니고 싶은데 어디서부터 계획을 해야할지 모르겠을때</div>
+            <div class="page2-line page2-text" data-dir="right">새로운 여행을 시도해 보고 싶을때</div>
+            <div class="page2-line page2-text" data-dir="left">처음 시도하는 여행을 준비하고 싶을때</div>
+            <div class="page2-line page2-text" data-dir="right">처음가는 국가의 여행을 계획할때</div>
+            <div class="page2-line page2-text" data-dir="left">계획과 예약을 한번에 이지트립</div>
+        </div>
+    </section>
+
+    <!-- 3페이지 -->
+    <section class="page" id="page3">
+        <div class="page3-content">
+            <h2>이지트립과 함께</h2>
             <p>
-                여기는 내가 개인적으로 실험하고 기록하는 공간입니다.<br>
-                앞으로 여러 여행지와 일정, 그리고 특별한 경험들을 담아볼 예정입니다.
+                여행의 시작부터 끝까지<br>
+                더 쉽고 특별하게 만들어 드립니다.
             </p>
         </div>
     </section>
 
     <script>
-        const hero = document.getElementById('hero');
+        const pages = [
+            document.getElementById('page1'),
+            document.getElementById('page2'),
+            document.getElementById('page3')
+        ];
+
         const heroText = document.getElementById('heroText');
-        const section = document.getElementById('section');
+        const page2Lines = document.querySelectorAll('.page2-line');
         const slides = document.querySelectorAll('.hero-slide');
 
-        let currentSlide = 0;
+        let currentPage = 0;
         let isAnimating = false;
-        let currentPage = 1; // 1: 첫 화면, 2: 두 번째 화면
+        let currentSlide = 0;
 
-        // 이미지 자동 슬라이드
+        // 이미지 슬라이드
         setInterval(() => {
-            if (currentPage !== 1) return;
+            if (currentPage !== 0) return;
             slides[currentSlide].classList.remove('active');
             currentSlide = (currentSlide + 1) % slides.length;
             slides[currentSlide].classList.add('active');
         }, 4000);
 
-        // 휠 이벤트 감지
+        // 휠 이벤트
         window.addEventListener('wheel', (e) => {
             if (isAnimating) return;
 
-            if (e.deltaY > 0 && currentPage === 1) {
-                // 아래로 스크롤 → 두 번째 페이지로
-                goToPage2();
-            } else if (e.deltaY < 0 && currentPage === 2) {
-                // 위로 스크롤 → 첫 페이지로
-                goToPage1();
+            if (e.deltaY > 0) {
+                // 아래로
+                if (currentPage < 2) goToPage(currentPage + 1);
+            } else if (e.deltaY < 0) {
+                // 위로
+                if (currentPage > 0) goToPage(currentPage - 1);
             }
         }, { passive: true });
 
-        function goToPage2() {
+        function goToPage(index) {
+            if (index === currentPage || isAnimating) return;
             isAnimating = true;
-            currentPage = 2;
 
-            // 글자 오른쪽으로 사라지기
-            heroText.classList.add('hide');
+            const prev = currentPage;
+            currentPage = index;
 
-            // 이미지 + 히어로 사라지기
-            setTimeout(() => {
-                hero.classList.add('hide');
-                section.classList.add('show');
-            }, 200);
+            // 1페이지 → 2페이지
+            if (prev === 0 && index === 1) {
+                heroText.classList.add('hide');
+                setTimeout(() => {
+                    pages[0].classList.remove('active');
+                    pages[1].classList.add('active');
+                    isAnimating = false;
+                }, 700);
+                return;
+            }
 
-            setTimeout(() => {
-                isAnimating = false;
-            }, 900);
-        }
+            // 2페이지 → 1페이지
+            if (prev === 1 && index === 0) {
+                pages[1].classList.remove('active');
+                pages[0].classList.add('active');
+                setTimeout(() => {
+                    heroText.classList.remove('hide');
+                    isAnimating = false;
+                }, 200);
+                return;
+            }
 
-        function goToPage1() {
-            isAnimating = true;
-            currentPage = 1;
+            // 2페이지 → 3페이지 (줄별 사라짐)
+            if (prev === 1 && index === 2) {
+                page2Lines.forEach(line => {
+                    const dir = line.dataset.dir;
+                    line.classList.add(dir === 'right' ? 'hide-right' : 'hide-left');
+                });
 
-            // 두 번째 페이지 숨기기
-            section.classList.remove('show');
+                setTimeout(() => {
+                    pages[1].classList.remove('active');
+                    pages[2].classList.add('active');
+                    isAnimating = false;
+                }, 750);
+                return;
+            }
 
-            // 히어로 + 이미지 다시 나타나기
-            hero.classList.remove('hide');
+            // 3페이지 → 2페이지 (줄별 나타남)
+            if (prev === 2 && index === 1) {
+                pages[2].classList.remove('active');
+                pages[1].classList.add('active');
 
-            // 글자 왼쪽에서 다시 나타나기
-            setTimeout(() => {
-                heroText.classList.remove('hide');
-            }, 150);
-
-            setTimeout(() => {
-                isAnimating = false;
-            }, 900);
+                // 잠시 후 애니메이션 클래스 제거 → 원래 자리에서 나타남
+                setTimeout(() => {
+                    page2Lines.forEach(line => {
+                        line.classList.remove('hide-right', 'hide-left');
+                    });
+                    isAnimating = false;
+                }, 50);
+                return;
+            }
         }
     </script>
 
