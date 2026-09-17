@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>이지트립</title>
     <style>
         * {
@@ -16,9 +16,9 @@
             overflow: hidden;
             height: 100vh;
             background: #111;
+            touch-action: none; /* 모바일 기본 스크롤 방지 */
         }
 
-        /* ===== 공통 페이지 ===== */
         .page {
             position: fixed;
             top: 0;
@@ -37,7 +37,7 @@
             z-index: 10;
         }
 
-        /* ===== 1페이지 (히어로) ===== */
+        /* 1페이지 */
         #page1 {
             background: #000;
         }
@@ -72,7 +72,7 @@
             top: 50%;
             left: 0;
             transform: translateY(-50%);
-            padding-left: 40px;
+            padding-left: 24px;
             color: white;
             z-index: 2;
             text-shadow: 0 4px 20px rgba(0,0,0,0.5);
@@ -85,7 +85,7 @@
         }
 
         .hero-text p {
-            font-size: 2.4rem;
+            font-size: 1.8rem;
             font-weight: 600;
             line-height: 1.5;
             margin: 0;
@@ -103,7 +103,7 @@
             opacity: 0.8;
         }
 
-        /* ===== 2페이지 ===== */
+        /* 2페이지 */
         #page2 {
             background: #f8f9fa;
             display: flex;
@@ -118,7 +118,7 @@
         }
 
         .page2-line {
-            margin: 18px 0;
+            margin: 16px 0;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s ease;
             opacity: 1;
             transform: translateX(0);
@@ -135,20 +135,20 @@
         }
 
         .page2-title {
-            font-size: 2.8rem;
+            font-size: 2.1rem;
             font-weight: 700;
             color: #222;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
 
         .page2-text {
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             color: #444;
             font-weight: 500;
             line-height: 1.6;
         }
 
-        /* ===== 3페이지 ===== */
+        /* 3페이지 */
         #page3 {
             background: #1a1a1a;
             display: flex;
@@ -164,14 +164,27 @@
         }
 
         .page3-content h2 {
-            font-size: 2.4rem;
+            font-size: 2rem;
             margin-bottom: 20px;
         }
 
         .page3-content p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.85;
             line-height: 1.8;
+        }
+
+        /* 모바일 글씨 크기 조정 */
+        @media (max-width: 600px) {
+            .hero-text p {
+                font-size: 1.5rem;
+            }
+            .page2-title {
+                font-size: 1.7rem;
+            }
+            .page2-text {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -243,16 +256,33 @@
             slides[currentSlide].classList.add('active');
         }, 4000);
 
-        // 휠 이벤트
+        // ===== 데스크톱 휠 =====
         window.addEventListener('wheel', (e) => {
             if (isAnimating) return;
+            if (e.deltaY > 0 && currentPage < 2) goToPage(currentPage + 1);
+            else if (e.deltaY < 0 && currentPage > 0) goToPage(currentPage - 1);
+        }, { passive: true });
 
-            if (e.deltaY > 0) {
-                // 아래로
-                if (currentPage < 2) goToPage(currentPage + 1);
-            } else if (e.deltaY < 0) {
-                // 위로
-                if (currentPage > 0) goToPage(currentPage - 1);
+        // ===== 모바일 터치 (스와이프) =====
+        let touchStartY = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            if (isAnimating) return;
+
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+
+            // 위로 스와이프 (아래로 페이지 이동)
+            if (diff > 50 && currentPage < 2) {
+                goToPage(currentPage + 1);
+            }
+            // 아래로 스와이프 (위로 페이지 이동)
+            else if (diff < -50 && currentPage > 0) {
+                goToPage(currentPage - 1);
             }
         }, { passive: true });
 
@@ -263,7 +293,7 @@
             const prev = currentPage;
             currentPage = index;
 
-            // 1페이지 → 2페이지
+            // 1 → 2
             if (prev === 0 && index === 1) {
                 heroText.classList.add('hide');
                 setTimeout(() => {
@@ -274,7 +304,7 @@
                 return;
             }
 
-            // 2페이지 → 1페이지
+            // 2 → 1
             if (prev === 1 && index === 0) {
                 pages[1].classList.remove('active');
                 pages[0].classList.add('active');
@@ -285,13 +315,12 @@
                 return;
             }
 
-            // 2페이지 → 3페이지 (줄별 사라짐)
+            // 2 → 3
             if (prev === 1 && index === 2) {
                 page2Lines.forEach(line => {
                     const dir = line.dataset.dir;
                     line.classList.add(dir === 'right' ? 'hide-right' : 'hide-left');
                 });
-
                 setTimeout(() => {
                     pages[1].classList.remove('active');
                     pages[2].classList.add('active');
@@ -300,12 +329,10 @@
                 return;
             }
 
-            // 3페이지 → 2페이지 (줄별 나타남)
+            // 3 → 2
             if (prev === 2 && index === 1) {
                 pages[2].classList.remove('active');
                 pages[1].classList.add('active');
-
-                // 잠시 후 애니메이션 클래스 제거 → 원래 자리에서 나타남
                 setTimeout(() => {
                     page2Lines.forEach(line => {
                         line.classList.remove('hide-right', 'hide-left');
