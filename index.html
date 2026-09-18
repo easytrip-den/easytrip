@@ -5,32 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>이지트립</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
             height: 100vh;
             background: #111;
-            touch-action: none; /* 모바일 기본 스크롤 방지 */
+            touch-action: none;
         }
 
         .page {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.7s ease;
             z-index: 1;
         }
-
         .page.active {
             opacity: 1;
             pointer-events: auto;
@@ -38,153 +30,250 @@
         }
 
         /* 1페이지 */
-        #page1 {
-            background: #000;
-        }
-
+        #page1 { background: #000; }
         .hero-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; opacity: 0;
             transition: opacity 1.2s ease;
         }
-
-        .hero-slide.active {
-            opacity: 1;
-        }
-
+        .hero-slide.active { opacity: 1; }
         .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 1;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); z-index: 1;
         }
-
         .hero-text {
-            position: absolute;
-            top: 50%;
-            left: 0;
+            position: absolute; top: 50%; left: 0;
             transform: translateY(-50%);
-            padding-left: 24px;
-            color: white;
-            z-index: 2;
+            padding-left: 28px; color: white; z-index: 2;
             text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s ease;
         }
-
-        .hero-text.hide {
-            transform: translateY(-50%) translateX(100vw);
-            opacity: 0;
-        }
-
         .hero-text p {
-            font-size: 1.8rem;
-            font-weight: 600;
-            line-height: 1.5;
-            margin: 0;
+            font-size: 2.8rem; font-weight: 700;
+            line-height: 1.55; margin: 0;
+            transition: transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.7s ease;
         }
-
+        .hero-text p.hide {
+            transform: translateX(110vw); opacity: 0;
+        }
         .scroll-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
+            position: absolute; bottom: 40px; left: 50%;
             transform: translateX(-50%);
-            color: white;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            z-index: 2;
-            opacity: 0.8;
+            color: white; font-size: 0.95rem; letter-spacing: 2px;
+            z-index: 2; opacity: 0.85;
+            animation: float 2.2s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
         }
 
         /* 2페이지 */
         #page2 {
             background: #f8f9fa;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .page2-content { text-align: center; max-width: 900px; padding: 20px; }
+        .page2-line {
+            margin: 16px 0;
+            transition: transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.7s ease;
+        }
+        .page2-line.hide-right { transform: translateX(120%); opacity: 0; }
+        .page2-line.hide-left { transform: translateX(-120%); opacity: 0; }
+        .page2-title { font-size: 2.1rem; font-weight: 700; color: #222; margin-bottom: 24px; }
+        .page2-text { font-size: 1.15rem; color: #444; font-weight: 500; line-height: 1.6; }
+
+        /* ===== 3페이지 ===== */
+        #page3 {
+            background: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .page2-content {
-            text-align: center;
-            max-width: 900px;
-            padding: 20px;
+        /* 핸드폰 크기 축소 (약 1/4 수준) */
+        .phone {
+            width: 180px;
+            height: 360px;
+            background: #111;
+            border-radius: 24px;
+            border: 5px solid #333;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            position: relative;
+            overflow: hidden;
         }
 
-        .page2-line {
-            margin: 16px 0;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s ease;
+        .phone-notch {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 70px; height: 16px;
+            background: #111;
+            border-radius: 0 0 10px 10px;
+            z-index: 20;
+        }
+
+        .phone-screen {
+            width: 100%; height: 100%;
+            background: #f7f7f8;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 채팅 영역 */
+        .chat-area {
+            flex: 1;
+            padding: 28px 10px 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 7px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            line-height: 1.4;
+            word-break: break-all;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .message.show {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #4f46e5;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
-        .page2-line.hide-right {
-            transform: translateX(120%);
-            opacity: 0;
+        /* 하단 입력바 */
+        .input-bar {
+            display: flex;
+            align-items: center;
+            padding: 8px 8px 12px;
+            background: white;
+            border-top: 1px solid #eee;
+            gap: 6px;
         }
-
-        .page2-line.hide-left {
-            transform: translateX(-120%);
-            opacity: 0;
+        .input-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: #f1f1f1;
+            border-radius: 16px;
+            padding: 7px 12px;
+            font-size: 0.72rem;
         }
-
-        .page2-title {
-            font-size: 2.1rem;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 24px;
-        }
-
-        .page2-text {
-            font-size: 1.15rem;
-            color: #444;
-            font-weight: 500;
-            line-height: 1.6;
-        }
-
-        /* 3페이지 */
-        #page3 {
-            background: #1a1a1a;
+        .send-icon {
+            width: 28px; height: 28px;
+            background: #4f46e5;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
         }
 
-        .page3-content {
+        /* 로딩 / 결과 오버레이 */
+        .overlay-view {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #f7f7f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 10;
+            padding: 12px;
+        }
+        .overlay-view.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            font-size: 0.78rem;
+            color: #444;
             text-align: center;
-            max-width: 700px;
-            padding: 20px;
+            line-height: 1.4;
         }
 
-        .page3-content h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+        /* 결과 표 */
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.65rem;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .result-table th {
+            background: #4f46e5;
+            color: white;
+            padding: 6px 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .result-table td {
+            padding: 5px 4px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            text-align: center;
+        }
+        .result-table tr:last-child td { border-bottom: none; }
+        .result-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #222;
+            text-align: center;
         }
 
-        .page3-content p {
-            font-size: 1.1rem;
-            opacity: 0.85;
-            line-height: 1.8;
+        .phone-caption {
+            color: #666;
+            font-size: 0.85rem;
         }
 
-        /* 모바일 글씨 크기 조정 */
         @media (max-width: 600px) {
-            .hero-text p {
-                font-size: 1.5rem;
-            }
-            .page2-title {
-                font-size: 1.7rem;
-            }
-            .page2-text {
-                font-size: 1rem;
-            }
+            .hero-text p { font-size: 1.9rem; }
+            .page2-title { font-size: 1.7rem; }
+            .page2-text { font-size: 1rem; }
+            .phone { width: 160px; height: 320px; }
         }
     </style>
 </head>
@@ -192,21 +281,17 @@
 
     <!-- 1페이지 -->
     <section class="page active" id="page1">
-        <img src="https://picsum.photos/id/1015/1920/1080" class="hero-slide active" alt="여행지1">
-        <img src="https://picsum.photos/id/1016/1920/1080" class="hero-slide" alt="여행지2">
-        <img src="https://picsum.photos/id/1018/1920/1080" class="hero-slide" alt="여행지3">
-        <img src="https://picsum.photos/id/1020/1920/1080" class="hero-slide" alt="여행지4">
-        <img src="https://picsum.photos/id/1036/1920/1080" class="hero-slide" alt="여행지5">
-
+        <img src="https://picsum.photos/id/1015/1920/1080" class="hero-slide active" alt="">
+        <img src="https://picsum.photos/id/1016/1920/1080" class="hero-slide" alt="">
+        <img src="https://picsum.photos/id/1018/1920/1080" class="hero-slide" alt="">
+        <img src="https://picsum.photos/id/1020/1920/1080" class="hero-slide" alt="">
+        <img src="https://picsum.photos/id/1036/1920/1080" class="hero-slide" alt="">
         <div class="hero-overlay"></div>
-
         <div class="hero-text" id="heroText">
-            <p>남들과는 다른</p>
-            <p>나만의 관광지</p>
+            <p>나만의 관광</p>
             <p>나만의 여행</p>
             <p>나만의 일정</p>
         </div>
-
         <div class="scroll-hint">↓ Scroll</div>
     </section>
 
@@ -224,13 +309,54 @@
 
     <!-- 3페이지 -->
     <section class="page" id="page3">
-        <div class="page3-content">
-            <h2>이지트립과 함께</h2>
-            <p>
-                여행의 시작부터 끝까지<br>
-                더 쉽고 특별하게 만들어 드립니다.
-            </p>
+        <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+
+                <!-- 채팅 화면 -->
+                <div class="chat-area" id="chatArea"></div>
+                <div class="input-bar">
+                    <input type="text" id="fakeInput" placeholder="메시지를 입력하세요" readonly>
+                    <div class="send-icon">➤</div>
+                </div>
+
+                <!-- 로딩 -->
+                <div class="overlay-view" id="loadingView">
+                    <div class="spinner"></div>
+                    <div class="loading-text">최적의 여행 일정을<br>구성하는중입니다</div>
+                </div>
+
+                <!-- 결과 -->
+                <div class="overlay-view" id="resultView">
+                    <div class="result-title">🇯🇵 오사카 2박3일</div>
+                    <table class="result-table">
+                        <tr>
+                            <th>일차</th>
+                            <th>일정</th>
+                        </tr>
+                        <tr>
+                            <td>Day1</td>
+                            <td>도톤보리<br>신사이바시</td>
+                        </tr>
+                        <tr>
+                            <td>Day2</td>
+                            <td>오사카성<br>구로몬시장</td>
+                        </tr>
+                        <tr>
+                            <td>Day3</td>
+                            <td>난바<br>귀국</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="font-size:0.6rem; color:#666; padding-top:6px;">
+                                대중교통 · 식도락 · 약 80만원
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
         </div>
+        <div class="phone-caption">채팅으로 일정을 받아보세요</div>
     </section>
 
     <script>
@@ -239,14 +365,14 @@
             document.getElementById('page2'),
             document.getElementById('page3')
         ];
-
-        const heroText = document.getElementById('heroText');
+        const heroLines = document.querySelectorAll('#heroText p');
         const page2Lines = document.querySelectorAll('.page2-line');
         const slides = document.querySelectorAll('.hero-slide');
 
         let currentPage = 0;
         let isAnimating = false;
         let currentSlide = 0;
+        let demoStarted = false;
 
         // 이미지 슬라이드
         setInterval(() => {
@@ -256,93 +382,141 @@
             slides[currentSlide].classList.add('active');
         }, 4000);
 
-        // ===== 데스크톱 휠 =====
+        // 휠 & 터치
         window.addEventListener('wheel', (e) => {
             if (isAnimating) return;
             if (e.deltaY > 0 && currentPage < 2) goToPage(currentPage + 1);
             else if (e.deltaY < 0 && currentPage > 0) goToPage(currentPage - 1);
         }, { passive: true });
 
-        // ===== 모바일 터치 (스와이프) =====
         let touchStartY = 0;
-
-        window.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        window.addEventListener('touchend', (e) => {
+        window.addEventListener('touchstart', e => touchStartY = e.touches[0].clientY, { passive: true });
+        window.addEventListener('touchend', e => {
             if (isAnimating) return;
-
-            const touchEndY = e.changedTouches[0].clientY;
-            const diff = touchStartY - touchEndY;
-
-            // 위로 스와이프 (아래로 페이지 이동)
-            if (diff > 50 && currentPage < 2) {
-                goToPage(currentPage + 1);
-            }
-            // 아래로 스와이프 (위로 페이지 이동)
-            else if (diff < -50 && currentPage > 0) {
-                goToPage(currentPage - 1);
-            }
+            const diff = touchStartY - e.changedTouches[0].clientY;
+            if (diff > 50 && currentPage < 2) goToPage(currentPage + 1);
+            else if (diff < -50 && currentPage > 0) goToPage(currentPage - 1);
         }, { passive: true });
 
         function goToPage(index) {
             if (index === currentPage || isAnimating) return;
             isAnimating = true;
-
             const prev = currentPage;
             currentPage = index;
 
-            // 1 → 2
             if (prev === 0 && index === 1) {
-                heroText.classList.add('hide');
+                heroLines.forEach((line, i) => setTimeout(() => line.classList.add('hide'), i * 180));
                 setTimeout(() => {
                     pages[0].classList.remove('active');
                     pages[1].classList.add('active');
                     isAnimating = false;
-                }, 700);
+                }, 900);
                 return;
             }
 
-            // 2 → 1
             if (prev === 1 && index === 0) {
                 pages[1].classList.remove('active');
                 pages[0].classList.add('active');
+                heroLines.forEach(line => line.classList.add('hide'));
                 setTimeout(() => {
-                    heroText.classList.remove('hide');
+                    heroLines.forEach((line, i) => setTimeout(() => line.classList.remove('hide'), i * 180));
                     isAnimating = false;
-                }, 200);
+                }, 150);
                 return;
             }
 
-            // 2 → 3
             if (prev === 1 && index === 2) {
                 page2Lines.forEach(line => {
-                    const dir = line.dataset.dir;
-                    line.classList.add(dir === 'right' ? 'hide-right' : 'hide-left');
+                    line.classList.add(line.dataset.dir === 'right' ? 'hide-right' : 'hide-left');
                 });
                 setTimeout(() => {
                     pages[1].classList.remove('active');
                     pages[2].classList.add('active');
                     isAnimating = false;
+                    // 3페이지 진입 시 데모 시작
+                    if (!demoStarted) {
+                        demoStarted = true;
+                        startDemo();
+                    }
                 }, 750);
                 return;
             }
 
-            // 3 → 2
             if (prev === 2 && index === 1) {
                 pages[2].classList.remove('active');
                 pages[1].classList.add('active');
                 setTimeout(() => {
-                    page2Lines.forEach(line => {
-                        line.classList.remove('hide-right', 'hide-left');
-                    });
+                    page2Lines.forEach(line => line.classList.remove('hide-right', 'hide-left'));
                     isAnimating = false;
                 }, 50);
                 return;
             }
         }
-    </script>
 
+        // ===== 핸드폰 데모 애니메이션 =====
+        const chatArea = document.getElementById('chatArea');
+        const fakeInput = document.getElementById('fakeInput');
+        const loadingView = document.getElementById('loadingView');
+        const resultView = document.getElementById('resultView');
+
+        const messages = [
+            "일본",
+            "오사카",
+            "2박3일",
+            "대중교통",
+            "식도락여행",
+            "인당 80만원"
+        ];
+
+        function addMessage(text, type = 'user') {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
+            chatArea.appendChild(div);
+            setTimeout(() => div.classList.add('show'), 30);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function typeText(text, callback) {
+            let i = 0;
+            fakeInput.value = '';
+            const interval = setInterval(() => {
+                fakeInput.value += text[i];
+                i++;
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    setTimeout(callback, 400);
+                }
+            }, 70);
+        }
+
+        function startDemo() {
+            let idx = 0;
+
+            function next() {
+                if (idx >= messages.length) {
+                    // 전송 후 로딩
+                    setTimeout(() => {
+                        loadingView.classList.add('show');
+                        setTimeout(() => {
+                            loadingView.classList.remove('show');
+                            resultView.classList.add('show');
+                        }, 2200);
+                    }, 600);
+                    return;
+                }
+
+                typeText(messages[idx], () => {
+                    addMessage(messages[idx], 'user');
+                    fakeInput.value = '';
+                    idx++;
+                    setTimeout(next, 500);
+                });
+            }
+
+            // 시작 전 약간의 딜레이
+            setTimeout(next, 800);
+        }
+    </script>
 </body>
 </html>
